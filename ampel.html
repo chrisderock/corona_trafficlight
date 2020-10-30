@@ -1,0 +1,76 @@
+<html>
+  <head>
+    <style type="text/css">
+      #ampel{
+	  width: 54px;
+	  height: 218px;
+	  background-color:#000;
+      }
+      #ampel DIV{
+	  width: 50px;
+	  height: 50px;
+	  border: 2px solid #fff;
+	  border-radius: 26px;
+	  background-color: #000;
+	  color: #fff;
+	  text-align: center;
+	  vertical-align: middle;
+      }
+      </style>
+  <script>
+    function loadData(objectId){
+	/**
+	 * ObjectID can be found at
+	 * https://npgeo-corona-npgeo-de.hub.arcgis.com/datasets/917fc37a709542548cc3be077a786c17_0/geoservice
+	 * (just click on the card)
+	 */
+	document.getElementById('green').style.backgroundColor='#000';
+	document.getElementById('yellow').style.backgroundColor='#000';
+	document.getElementById('red').style.backgroundColor='#000';
+        document.getElementById('darkred').style.backgroundColor='#000';
+	document.getElementById('green').innerHTML='';
+	document.getElementById('yellow').innerHTML='';
+	document.getElementById('red').innerHTML='';
+	document.getElementById('darkred').innerHTML='';
+        var req = new XMLHttpRequest();
+	var url2="https://services7.arcgis.com/mOBPykOjAyBO2ZKk/arcgis/rest/services/RKI_Landkreisdaten/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json&objectIds="+objectId;
+        req.onreadystatechange = function(){
+	    if(this.readyState == 4){
+		var obj = JSON.parse(this.responseText);
+		var cnt = obj.features[0].attributes.cases7_per_100k;
+		console.log(cnt);
+		console.log(obj.features[0].attributes.last_update);
+		console
+		if(cnt < 25){
+		    document.getElementById('green').style.backgroundColor='#5cb12d';
+		    document.getElementById('green').innerHTML=Math.round(cnt);
+		    return;
+		}
+		if(cnt < 50){
+		    document.getElementById('yellow').style.backgroundColor='#f6ff00';
+		    document.getElementById('yellow').innerHTML=Math.round(cnt);
+		    return;
+		}
+		if(cnt < 100){
+		    document.getElementById('red').style.backgroundColor='#ff0000';
+		    document.getElementById('red').innerHTML=Math.round(cnt);
+		    return;
+		}
+		document.getElementById('darkred').style.backgroundColor='#550808';
+		document.getElementById('darkred').innerHTML=Math.round(cnt);
+	    }
+	}
+	req.open("GET",url2,true);
+	req.send();
+    }
+  </script>
+  </head>
+  <body onload="loadData(284);">
+    <div id="ampel">
+    <div id="darkred"></div>
+    <div id="red"></div>
+    <div id="yellow"></div>
+    <div id="green"></div>
+  </div>
+  </body>
+</html>
